@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nusatopia Game</title>
+  </head>
+  <body>
+    <!-- Main App Container -->
+    <div id="app-wrapper">
+      <!-- Penampung Kanvas Game Phaser -->
+      <div id="game-container"></div>
+
+      <!-- HUD Overlay -->
+      <div id="hud">
+        <!-- Top Bar for Buttons -->
+        <div id="hud-topbar" style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; pointer-events: auto;">
+            <button id="btn-craft" class="hud-btn">🪓 CRAFT [C]</button>
+        </div>
+
+        <!-- Stats Panel (Top-Left) -->
+        <div id="stats-panel">
+          <div class="stat-row">
+            <span class="stat-icon">❤️</span>
+            <div class="stat-bar"><div class="stat-fill" id="hp-fill" style="width: 100%; background: var(--red);"></div></div>
+            <span class="stat-num" id="hp-num">100</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-icon">🍖</span>
+            <div class="stat-bar"><div class="stat-fill" id="hunger-fill" style="width: 100%; background: var(--amber);"></div></div>
+            <span class="stat-num" id="hunger-num">100</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-icon">💧</span>
+            <div class="stat-bar"><div class="stat-fill" id="thirst-fill" style="width: 100%; background: #4488ff;"></div></div>
+            <span class="stat-num" id="thirst-num">100</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-icon">⚡</span>
+            <div class="stat-bar"><div class="stat-fill" id="energy-fill" style="width: 100%; background: var(--gold);"></div></div>
+            <span class="stat-num" id="energy-num">100</span>
+          </div>
+        </div>
+
+        <!-- Time Clock (Top-Right) -->
+        <div id="time-clock">🌤 Pagi 06:00</div>
+
+        <!-- Hotbar Wrap (Bottom-Center) -->
+        <div id="hotbar-wrap">
+          <div id="hotbar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI Overlay Jurnal Nusatopia -->
+    <div id="jurnal-overlay">
+      <div class="jurnal-card">
+        <div class="jurnal-header">
+          <span class="jurnal-badge">📜 Jurnal Nusatopia</span>
+          <h2 id="jurnal-judul">Nama Warisan</h2>
+        </div>
+        <div class="jurnal-body">
+          <p id="jurnal-deskripsi">Fakta menarik tentang warisan budaya akan tampil di sini.</p>
+        </div>
+        <div class="jurnal-footer">
+          <button id="jurnal-tutup-btn" class="btn-tutup">Tutup Jurnal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI Overlay Crafting -->
+    <div id="craft-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: center; padding: 20px;">
+      <div class="jurnal-card">
+        <div class="jurnal-header">
+          <span class="jurnal-badge">🪓 Meja Kerja</span>
+          <h2 style="margin-top: 6px; font-size: 1.8rem; color: #2c1d11;">Crafting</h2>
+        </div>
+        <div class="jurnal-body" id="craft-list" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Resep akan di-render di sini -->
+        </div>
+        <div class="jurnal-footer">
+          <button id="craft-tutup-btn" class="btn-tutup">Tutup</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
