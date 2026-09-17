@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nusatopia Game</title>
+    <title>Nusatopia - Farming & Town Building Simulator</title>
   </head>
   <body>
     <!-- Main App Container -->
@@ -14,37 +14,32 @@
 
       <!-- HUD Overlay -->
       <div id="hud">
-        <!-- Top Bar for Buttons -->
-        <div id="hud-topbar" style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; pointer-events: auto;">
-            <button id="btn-craft" class="hud-btn">🪓 CRAFT [C]</button>
+        <!-- Top Bar for Buttons & Money -->
+        <div id="hud-topbar">
+          <div id="hud-money-badge">💰 <span id="hud-money">500 Nusa</span></div>
+          <button id="btn-craft" class="hud-btn">🪓 CRAFT [C]</button>
+          <button id="btn-jurnal" class="hud-btn">📜 JURNAL [J]</button>
+        </div>
+
+        <!-- Top-Right Calendar & Weather HUD -->
+        <div id="hud-calendar-card">
+          <div id="hud-season">🌧️ Musim Hujan</div>
+          <div id="hud-day">Hari 1, Thn 1</div>
+          <div id="hud-time">06:00</div>
+          <div id="hud-weather">☁️ Cerah</div>
         </div>
 
         <!-- Stats Panel (Top-Left) -->
         <div id="stats-panel">
           <div class="stat-row">
-            <span class="stat-icon">❤️</span>
-            <div class="stat-bar"><div class="stat-fill" id="hp-fill" style="width: 100%; background: var(--red);"></div></div>
-            <span class="stat-num" id="hp-num">100</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-icon">🍖</span>
-            <div class="stat-bar"><div class="stat-fill" id="hunger-fill" style="width: 100%; background: var(--amber);"></div></div>
-            <span class="stat-num" id="hunger-num">100</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-icon">💧</span>
-            <div class="stat-bar"><div class="stat-fill" id="thirst-fill" style="width: 100%; background: #4488ff;"></div></div>
-            <span class="stat-num" id="thirst-num">100</span>
-          </div>
-          <div class="stat-row">
             <span class="stat-icon">⚡</span>
-            <div class="stat-bar"><div class="stat-fill" id="energy-fill" style="width: 100%; background: var(--gold);"></div></div>
+            <div class="stat-bar"><div class="stat-fill" id="energy-fill" style="width: 100%; background: var(--gold, #f1c40f);"></div></div>
             <span class="stat-num" id="energy-num">100</span>
           </div>
         </div>
 
-        <!-- Time Clock (Top-Right) -->
-        <div id="time-clock">🌤 Pagi 06:00</div>
+        <!-- Toast Notifications -->
+        <div id="toast-container"></div>
 
         <!-- Hotbar Wrap (Bottom-Center) -->
         <div id="hotbar-wrap">
@@ -57,8 +52,9 @@
     <div id="jurnal-overlay">
       <div class="jurnal-card">
         <div class="jurnal-header">
-          <span class="jurnal-badge">📜 Jurnal Nusatopia</span>
+          <span class="jurnal-badge">📜 Jurnal Nusantara</span>
           <h2 id="jurnal-judul">Nama Warisan</h2>
+          <small id="jurnal-progress" style="color: #d35400; font-weight: bold;">Pengetahuan Nusantara: 0/3 (0%)</small>
         </div>
         <div class="jurnal-body">
           <p id="jurnal-deskripsi">Fakta menarik tentang warisan budaya akan tampil di sini.</p>
@@ -70,17 +66,55 @@
     </div>
 
     <!-- UI Overlay Crafting -->
-    <div id="craft-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: center; padding: 20px;">
+    <div id="craft-overlay" style="display: none;">
       <div class="jurnal-card">
         <div class="jurnal-header">
-          <span class="jurnal-badge">🪓 Meja Kerja</span>
-          <h2 style="margin-top: 6px; font-size: 1.8rem; color: #2c1d11;">Crafting</h2>
+          <span class="jurnal-badge">🍳 Crafting & Kuliner</span>
+          <h2 style="margin-top: 4px; font-size: 1.6rem; color: #2c1d11;">Resep Nusantara</h2>
         </div>
-        <div class="jurnal-body" id="craft-list" style="display: flex; flex-direction: column; gap: 10px;">
-          <!-- Resep akan di-render di sini -->
-        </div>
+        <div class="jurnal-body" id="craft-list"></div>
         <div class="jurnal-footer">
           <button id="craft-tutup-btn" class="btn-tutup">Tutup</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI Overlay Pasar Desa -->
+    <div id="market-modal" style="display: none;">
+      <div class="jurnal-card wide-card">
+        <div class="jurnal-header">
+          <span class="jurnal-badge">🏪 Pasar Desa Keping Nusa</span>
+          <h2 style="margin-top: 4px; font-size: 1.6rem; color: #2c1d11;">Transaksi Hasil Panen & Bibit</h2>
+        </div>
+        <div class="jurnal-body market-grid">
+          <div class="market-section">
+            <h3>🌱 Beli Bibit Tanaman</h3>
+            <div id="market-buy-list"></div>
+          </div>
+          <div class="market-section">
+            <h3>💰 Jual Hasil Tani & Kerajinan</h3>
+            <div id="market-sell-list"></div>
+          </div>
+        </div>
+        <div class="jurnal-footer">
+          <button id="market-tutup-btn" class="btn-tutup">Tutup Pasar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI Overlay NPC Dialog -->
+    <div id="npc-dialog-modal" style="display: none;">
+      <div class="jurnal-card">
+        <div class="jurnal-header">
+          <span class="jurnal-badge" id="npc-role">Warga Desa</span>
+          <h2 id="npc-name">Nama NPC</h2>
+          <div id="npc-hearts" style="font-size: 1.2rem; margin-top: 4px;">❤️❤️🤍🤍🤍</div>
+        </div>
+        <div class="jurnal-body">
+          <p id="npc-message">Pesan warga desa...</p>
+        </div>
+        <div class="jurnal-footer">
+          <button id="npc-close-btn" class="btn-tutup">Selesai Bicara</button>
         </div>
       </div>
     </div>

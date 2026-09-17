@@ -4,10 +4,14 @@ import './style.css';
 
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    parent: 'game-container',
-    backgroundColor: '#2e7d32', // Hijau rumput
+    scale: {
+        mode: Phaser.Scale.RESIZE,
+        parent: 'game-container',
+        width: '100%',
+        height: '100%',
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
+    backgroundColor: '#4EB4AC', // Warna air teal (Tiny Swords style)
     physics: {
         default: 'arcade',
         arcade: {
@@ -19,3 +23,4 @@ const config = {
 };
 
 const game = new Phaser.Game(config);
+

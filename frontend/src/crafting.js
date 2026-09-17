@@ -1,9 +1,12 @@
 import { G, updateHotbarUI } from './ui.js';
 
 export const RECIPES = [
-    { id: 'wooden_sword', req: { wood: 2, stick: 1 }, name: 'Pedang Kayu', icon: '🗡️' },
-    { id: 'wooden_pickaxe', req: { wood: 3, stick: 2 }, name: 'Beliung Kayu', icon: '⛏️' },
-    { id: 'stick', req: { wood: 1 }, name: 'Tongkat Kayu', icon: '🦯' }
+    { id: 'cangkul_kayu', req: { wood: 3 }, name: 'Cangkul Kayu Traditional', icon: '⛏️', category: 'Alat' },
+    { id: 'caping_bambu', req: { wood: 4 }, name: 'Caping Bambu Petani', icon: '👒', category: 'Alat' },
+    { id: 'nasi_goreng', req: { padi: 2, cabai: 1 }, name: 'Nasi Goreng Rempah', icon: '🍳', category: 'Kuliner', price: 180 },
+    { id: 'wedang_jahe', req: { jahe: 2 }, name: 'Wedang Jahe Warmth', icon: '☕', category: 'Kuliner', price: 150 },
+    { id: 'jamu_kunyit', req: { kunyit: 2 }, name: 'Jamu Kunyit Asam', icon: '🍵', category: 'Kuliner', price: 160 },
+    { id: 'keris_kayu', req: { wood: 5 }, name: 'Keris Kayu Ukir', icon: '🗡️', category: 'Kerajinan', price: 220 }
 ];
 
 export function openCraftingPanel(scene) {
@@ -14,7 +17,7 @@ export function openCraftingPanel(scene) {
     }
     if (scene && scene.scene) {
         scene.scene.pause();
-    } else if (window.gameScene) { // fallback
+    } else if (window.gameScene) {
         window.gameScene.scene.pause();
     }
 }
@@ -53,7 +56,6 @@ export function renderCraftingList() {
     if (!listEl) return;
     listEl.innerHTML = '';
 
-    // Hitung bahan di inventory
     const invCounts = {};
     G.inv.forEach(item => {
         if (!invCounts[item.id]) invCounts[item.id] = 0;
@@ -77,7 +79,7 @@ export function renderCraftingList() {
 
         row.innerHTML = `
             <div class="craft-info">
-                <strong>${recipe.icon} ${recipe.name}</strong><br/>
+                <strong>${recipe.icon} ${recipe.name}</strong> <span class="badge">${recipe.category}</span><br/>
                 <small>Bahan: ${reqText.join(', ')}</small>
             </div>
             <button class="craft-btn" ${canCraft ? '' : 'disabled'}>Buat</button>
@@ -116,10 +118,10 @@ function craftItem(recipe) {
     if (existing) {
         existing.qty += 1;
     } else {
-        G.inv.push({ id: recipe.id, name: recipe.name, qty: 1, icon: recipe.icon });
+        G.inv.push({ id: recipe.id, name: recipe.name, qty: 1, icon: recipe.icon, price: recipe.price || 50 });
     }
 
     renderCraftingList();
     updateHotbarUI();
-    console.log(`[Crafting] Berhasil membuat ${recipe.name}`);
+    if (window.showToast) window.showToast(`🍳 Berhasil membuat ${recipe.name}!`);
 }

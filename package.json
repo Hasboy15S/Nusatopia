@@ -1,0 +1,11 @@
+{
+  "name": "nusatopia-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"npm run dev --prefix frontend\" \"cd backend && php artisan serve\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
