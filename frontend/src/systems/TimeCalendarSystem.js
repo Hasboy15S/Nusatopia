@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 /**
  * ╔══════════════════════════════════════════════════════════╗
  * ║            NUSATOPIA TIME & CALENDAR SYSTEM              ║
@@ -94,6 +95,11 @@ export class TimeCalendarSystem {
             this.scene.npcManager.onNewDay(this.getCurrentSeason().id);
         }
 
+        // Trigger Auto-Save Asinkron saat pemain berganti hari/tidur
+        if (this.scene.saveManager) {
+            this.scene.saveManager.autoSave();
+        }
+
         this.updateAmbientLighting();
         this.updateUI();
 
@@ -116,21 +122,36 @@ export class TimeCalendarSystem {
     updateAmbientLighting() {
         if (!this.scene || !this.scene.cameras || !this.scene.cameras.main) return;
 
-        const cam = this.scene.cameras.main;
-        const h = this.hour;
+        // Buat overlay layer jika belum ada
+        if (!this.ambientOverlay) {
+            const w = this.scene.physics.world.bounds.width;
+            const h = this.scene.physics.world.bounds.height;
+            this.ambientOverlay = this.scene.add.rectangle(w/2, h/2, w, h, 0x000000);
+            this.ambientOverlay.setDepth(9998); // Di bawah UI (9999) tapi di atas semuanya
+            this.ambientOverlay.setBlendMode(Phaser.BlendModes.MULTIPLY);
+            this.ambientOverlay.setAlpha(0);
+        }
 
-        if (h >= 6 && h < 16) {
-            // Pagi - Siang Cerah
-            cam.clearTint();
-        } else if (h >= 16 && h < 19) {
-            // Sore Kemasan (Sunset)
-            cam.setTint(0xffcc88);
-        } else if (h >= 19 || h < 4) {
-            // Malam Hari (Night Blue)
-            cam.setTint(0x5577bb);
+        const hour = this.hour;
+
+        // Reset tween yang sedang berjalan agar warna transisi mulus
+        this.scene.tweens.killTweensOf(this.ambientOverlay);
+
+        if (hour >= 6 && hour < 16) {
+            // Pagi - Siang Cerah (Warna Normal)
+            this.scene.tweens.add({ targets: this.ambientOverlay, alpha: 0, duration: 3000 });
+        } else if (hour >= 16 && hour < 19) {
+            // Sore Kemarau (Sunset Jingga)
+            this.ambientOverlay.fillColor = 0xe67e22; 
+            this.scene.tweens.add({ targets: this.ambientOverlay, alpha: 0.35, duration: 4000 });
+        } else if (hour >= 19 || hour < 4) {
+            // Malam Hari (Malam Biru Gelap)
+            this.ambientOverlay.fillColor = 0x0a0a2a; 
+            this.scene.tweens.add({ targets: this.ambientOverlay, alpha: 0.70, duration: 4000 });
         } else {
-            // Fajar (Dawn)
-            cam.setTint(0xffddaa);
+            // Fajar (Dawn / Transisi ke Siang)
+            this.ambientOverlay.fillColor = 0xffa07a; 
+            this.scene.tweens.add({ targets: this.ambientOverlay, alpha: 0.3, duration: 3000 });
         }
     }
 
