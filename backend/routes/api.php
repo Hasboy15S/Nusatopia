@@ -22,3 +22,8 @@ Route::post('/npc/gift', [NpcController::class, 'gift'])->name('npc.gift');
 // ── Market Desa API ───────────────────────────────────────────────────────
 Route::get('/market/prices', [MarketController::class, 'prices'])->name('market.prices');
 Route::post('/market/sell', [MarketController::class, 'sell'])->name('market.sell');
+
+// ── Game State Save/Load API ──────────────────────────────────────────────
+use App\Http\Controllers\GameSaveController;
+Route::post('/save', [GameSaveController::class, 'save'])->name('game.save');
+Route::get('/load/{player_id}', [GameSaveController::class, 'load'])->name('game.load');
