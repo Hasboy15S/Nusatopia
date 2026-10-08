@@ -11,7 +11,9 @@ const config = {
         height: '100%',
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    backgroundColor: '#4EB4AC', // Warna air teal (Tiny Swords style)
+    backgroundColor: '#47ABA9', // Tahap 3b: Warna air seragam
+    pixelArt: true,
+    roundPixels: true,
     physics: {
         default: 'arcade',
         arcade: {
