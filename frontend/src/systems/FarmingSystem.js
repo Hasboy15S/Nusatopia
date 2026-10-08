@@ -44,6 +44,39 @@ export class FarmingSystem {
         return `${col}_${row}`;
     }
 
+    // ── EFEK VISUAL BERTANI ───────────────────────────────────────────────────
+    showDirtEffect(px, py) {
+        // Particle debu tanah saat mencangkul
+        const particles = this.scene.add.particles(px, py, 'dust_fx', {
+            speed: { min: 40, max: 80 },
+            angle: { min: 220, max: 320 },
+            gravityY: 150,
+            scale: { start: 0.8, end: 0 },
+            lifespan: 600,
+            quantity: 5,
+            emitting: false
+        });
+        particles.setDepth(py + 10);
+        particles.explode();
+        this.scene.time.delayedCall(1000, () => particles.destroy());
+    }
+
+    showWaterEffect(px, py) {
+        // Animasi tetesan air / splash
+        const particles = this.scene.add.particles(px, py - 10, 'water_splash_fx', {
+            speed: { min: 30, max: 60 },
+            angle: { min: 250, max: 290 },
+            gravityY: 200,
+            scale: { start: 0.6, end: 0 },
+            lifespan: 500,
+            quantity: 6,
+            emitting: false
+        });
+        particles.setDepth(py + 10);
+        particles.explode();
+        this.scene.time.delayedCall(1000, () => particles.destroy());
+    }
+
     // ── 1. MENCANGKUL / MEMBAJAK ──────────────────────────────────────────────
     tillTile(col, row, isBuffaloPlow = false) {
         if (!this.isInsideFarmArea(col, row)) {
@@ -68,6 +101,11 @@ export class FarmingSystem {
                 }
 
                 this.renderPlotVisual(c, r, plot);
+                
+                // Tambahkan efek debu tanah
+                const px = c * this.tileSize + this.tileSize / 2;
+                const py = r * this.tileSize + this.tileSize / 2;
+                this.showDirtEffect(px, py);
             });
         });
 
@@ -87,6 +125,12 @@ export class FarmingSystem {
 
         plot.isWatered = true;
         this.renderPlotVisual(col, row, plot);
+        
+        // Memunculkan efek tetesan air
+        const px = col * this.tileSize + this.tileSize / 2;
+        const py = row * this.tileSize + this.tileSize / 2;
+        this.showWaterEffect(px, py);
+
         if (window.showToast) window.showToast('💧 Lahan berhasil disiram!');
         return true;
     }
@@ -201,14 +245,17 @@ export class FarmingSystem {
         if (plot.textEl) plot.textEl.destroy();
 
         // Layer Tanah Tercangkul / Disiram
-        const rectColor = plot.isWatered ? 0x3d2612 : (plot.isTilled ? 0x7c5222 : 0x478c38);
-        const g = this.scene.add.graphics();
-        g.fillStyle(rectColor, 0.85);
-        g.fillRoundedRect(px - 30, py - 30, 60, 60, 4);
-        g.lineStyle(2, plot.isWatered ? 0x2980b9 : 0x5a3b18, 1);
-        g.strokeRoundedRect(px - 30, py - 30, 60, 60, 4);
-        g.setDepth(1);
-        plot.sprite = g;
+        // Menggunakan aset dari ts_tilemap (Tile 37 adalah pure dirt/tanah di Tiny Swords)
+        // Dengan menggunakan sprite 64x64 penuh, petak tanah yang dicangkul bersebelahan akan menyatu tanpa jarak!
+        const dirtSprite = this.scene.add.sprite(px, py, 'ts_tilemap', 37);
+        dirtSprite.setDepth(1);
+        
+        // Jika disiram, berikan efek warna lebih gelap/basah
+        if (plot.isWatered) {
+            dirtSprite.setTint(0x7a5b3e);
+        }
+
+        plot.sprite = dirtSprite;
 
         // Layer Icon Tanaman & Growth Stage
         if (plot.cropId) {
